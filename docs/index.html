@@ -175,5 +175,37 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Function to extract URL parameters and update the HTML content
+        function updateContentFromURL() {
+            // Get the URL parameters
+            const params = new URLSearchParams(window.location.search);
+
+            // Mapping of URL parameters to element IDs
+            const mappings = {
+                subreddit_name_prefixed: "subreddit_name_prefixed",
+                author: "author",
+                time_elapsed: "time_elapsed",
+                title: "title",
+                selftext: "selftext",
+                ups: "ups",
+                comments: "comments",
+                channel: "channel"
+            };
+
+            // Loop through the mappings and update the corresponding elements
+            for (const [param, id] of Object.entries(mappings)) {
+                const value = params.get(param);
+                if (value) {
+                    // Decode the parameter value and set it to the element's text content
+                    document.getElementById(id).textContent = decodeURIComponent(value);
+                }
+            }
+        }
+
+        // Call the function when the DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", updateContentFromURL);
+    </script>
 </body>
 </html>
