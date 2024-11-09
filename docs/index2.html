@@ -177,78 +177,36 @@
     </div>
 
     <script>
-
-        // Function to format the time elapsed since a given UTC timestamp
-        function timeElapsed(createdUtc) {
-            const now = new Date();
-            const postTime = new Date(createdUtc * 1000); // Convert seconds to milliseconds
-            const delta = now - postTime;
-            const totalSeconds = Math.floor(delta / 1000);
-
-            if (totalSeconds < 60) {
-                return `${totalSeconds} seconds ago`;
-            } else if (totalSeconds < 3600) {
-                const minutes = Math.floor(totalSeconds / 60);
-                return `${minutes}m ago`;
-            } else if (totalSeconds < 86400) {
-                const hours = Math.floor(totalSeconds / 3600);
-                return `${hours}h ago`;
-            } else if (totalSeconds < 31536000) {
-                const days = Math.floor(totalSeconds / 86400);
-                return `${days}d ago`;
-            } else {
-                const years = Math.floor(totalSeconds / 31536000);
-                return `${years}y ago`;
-            }
-        }
-
-        // Function to format numbers with 'k' or 'm' suffixes
-        function formatNumber(number) {
-            if (number >= 1000000) {
-                return (number % 1000000 !== 0) ? `${(number / 1000000).toFixed(1)}m` : `${Math.floor(number / 1000000)}m`;
-            } else if (number >= 1000) {
-                return (number % 1000 !== 0) ? `${(number / 1000).toFixed(1)}k` : `${Math.floor(number / 1000)}k`;
-            } else {
-                return number.toLocaleString();
-            }
-        }
-
         // Function to extract URL parameters and update the HTML content
         function updateContentFromURL() {
             // Get the URL parameters
             const params = new URLSearchParams(window.location.search);
 
-            // Create a table (object) to store parameter values
-            const paramTable = {};
+            // Mapping of URL parameters to element IDs
+            const mappings = {
+                subreddit_name_prefixed: "subreddit_name_prefixed",
+                author: "author",
+                time_elapsed: "time_elapsed",
+                title: "title",
+                selftext: "selftext",
+                ups: "ups",
+                comments: "comments",
+                avatar: "avatar",
+                channel_name: "channel_name"
+            };
 
-            // Loop through the parameters and fill the table
-            params.forEach((value, key) => {
-                paramTable[key] = decodeURIComponent(value);
-            });
-
-            // Handle the case where subreddit_name_prefixed is missing
-            if (!paramTable.subreddit_name_prefixed && paramTable.author) {
-                paramTable.subreddit_name_prefixed = `/r/${paramTable.author}`;
+            // Loop through the mappings and update the corresponding elements
+            for (const [param, id] of Object.entries(mappings)) {
+                const value = params.get(param);
+                if (value) {
+                    // Decode the parameter value and set it to the element's text content
+                    document.getElementById(id).textContent = decodeURIComponent(value);
+                }
             }
-
-            // Update the HTML elements with formatted data
-            if (paramTable.subreddit_name_prefixed) document.getElementById('subreddit_name_prefixed').textContent = paramTable.subreddit_name_prefixed;
-            if (paramTable.author) document.getElementById('author').textContent = `u/${paramTable.author}`;
-            if (paramTable.created_utc) document.getElementById('time_elapsed').textContent = timeElapsed(parseInt(paramTable.created_utc));
-            if (paramTable.title) document.getElementById('title').textContent = paramTable.title;
-            if (paramTable.selftext) document.getElementById('selftext').textContent = paramTable.selftext;
-            if (paramTable.ups) document.getElementById('ups').textContent = formatNumber(parseInt(paramTable.ups));
-            if (paramTable.comments) document.getElementById('comments').textContent = formatNumber(parseInt(paramTable.comments));
-            if (paramTable.avatar) document.getElementById('avatar').src = paramTable.avatar;
-            if (paramTable.channel_name) document.getElementById('channel_name').textContent = paramTable.channel_name;
         }
 
         // Call the function when the DOM is fully loaded
         document.addEventListener("DOMContentLoaded", updateContentFromURL);
-
-
-
-
     </script>
 </body>
 </html>
